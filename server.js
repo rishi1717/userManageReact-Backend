@@ -9,6 +9,9 @@ const userModel = require("./mongo/userModel")
 const app = express()
 
 const port = process.env.PORT || 3001
+const secretKey = process.env.JWT_KEY
+
+app.use(cors())
 
 app.use(express.json())
 
@@ -25,6 +28,25 @@ app.post("/api/register", async (req, res) => {
 		res.json({ status: "ok" })
 	} catch (err) {
 		res.status(400).json({ status: "error", error: err.message })
+	}
+})
+
+app.post("/api/login", async (req, res) => {
+	const user = await userModel.findOne({
+		email: req.body.email,
+		password: req.body.password,
+	})
+	if (user) {
+		const token = jwt.sign(
+			{
+				email: user.email,
+				name: user.name,
+			},
+			secretKey
+		)
+		return res.json({ status: "ok", user: token })
+	} else {
+		return res.status(401).json({ status: "error", user: false })
 	}
 })
 
