@@ -1,4 +1,5 @@
-const router = require("express").Router
+const express = require("express")
+const router = express.Router()
 const { Users, validate } = require("../mongo/userModel")
 const bcrypt = require("bcrypt")
 require("dotenv").config()
@@ -6,9 +7,8 @@ require("dotenv").config()
 router.post("/", async (req, res) => {
 	try {
 		const { error } = validate(req.body)
-		if (err)
+		if (error)
 			return res.status(400).send({ message: error.details[0].message })
-
 		const user = await Users.findOne({ email: req.body.email })
 		if (user)
 			return res
