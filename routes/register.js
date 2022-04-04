@@ -41,8 +41,20 @@ router.put("/", async (req, res) => {
 			{ name: req.body.name, email: req.body.email, phone: req.body.phone }
 		)
 		const users = await Users.find()
-		res.status(201).send({users, message: "User Updated succesfully" })
+		res.status(201).send({ users, message: "User Updated succesfully" })
 	} catch (err) {
+		console.log(err.message)
+		res.status(500).json({ message: "Internal server error" })
+	}
+})
+
+router.delete("/", async (req, res) => {
+	try {
+		console.log(req.body)
+		await Users.findByIdAndDelete(req.body._id)
+		const users = await Users.find()
+		res.status(201).send({ users, message: "User Deleted succesfully" })
+	} catch (error) {
 		console.log(err.message)
 		res.status(500).json({ message: "Internal server error" })
 	}
