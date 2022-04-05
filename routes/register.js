@@ -5,9 +5,20 @@ const bcrypt = require("bcrypt")
 const joi = require("joi")
 require("dotenv").config()
 
+router.get("/", async (req, res) => {
+	try {
+		let value = new RegExp(req.query.search, "i")
+		let users = await Users.find({
+			$or: [{ name: value }, { email: value }],
+		})
+		res.status(201).send({ users, message: "Users searched" })
+	} catch (err) {
+		console.log(err.message)
+	}
+})
+
 router.post("/", async (req, res) => {
 	try {
-		console.log(req.body)
 		const { error } = validate(req.body)
 		if (error)
 			return res.status(400).send({ message: error.details[0].message })
@@ -50,7 +61,6 @@ router.put("/", async (req, res) => {
 
 router.delete("/", async (req, res) => {
 	try {
-		console.log(req.body)
 		await Users.findByIdAndDelete(req.body._id)
 		const users = await Users.find()
 		res.status(201).send({ users, message: "User Deleted succesfully" })
